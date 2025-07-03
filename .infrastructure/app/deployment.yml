@@ -17,6 +17,29 @@ spec:
       labels:
         app: todoapp
     spec:
+      # Додано Affinity правила
+      affinity:
+        # Node Affinity з PreferredDuringSchedulingIgnoredDuringExecution для вузлів з app=todoapp
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todoapp
+
+        # Pod Anti-Affinity щоб поди не розгорталися на одному вузлі
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: todoapp
+              topologyKey: kubernetes.io/hostname
+
       containers:
       - name: todoapp
         image: ikulyk404/todoapp:4.0.1
